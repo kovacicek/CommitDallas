@@ -1,0 +1,1 @@
+extracted columns from staar_merged files(rs, d, satis_rec_nm, satis_ph1_nm)
