@@ -8,7 +8,7 @@ Created on 07.11.2015.
 '''
 
 from os import path, listdir, mkdir, remove
-from os.path import join, splitext, exists
+from os.path import join, splitext, exists, isdir
 from pandas import ExcelWriter, read_csv, concat, merge
 from pandas.core.frame import DataFrame
 #from bokeh.sampledata.stocks import filename
@@ -41,9 +41,10 @@ class StaarFilterAll:
         Cleans output dir if exists
         """
         print("Clean Output")
-        if exists(self.output_dir):
+        if exists(self.output_dir) and isdir(self.output_dir):
             for item in listdir(self.output_dir):
-                remove(join(self.output_dir, item))
+                if 'readme.txt' not in item:
+                    remove(join(self.output_dir, item))
             print("\t output dir cleaned: %s" % (self.output_dir))
         else:
             print("\t output dir does not exist: %s" % (self.output_dir))
@@ -51,16 +52,15 @@ class StaarFilterAll:
 
     def ReadData(self):
         print("\nRead Data")
-        # List directory containing the .csv files
+        # List input directory containing the .csv files
         for filename in listdir(self.input_dir):
-
             name_of_file = path.splitext(filename)[0]
             if(path.splitext(filename)[1] == ".csv"):
                 file_path = path.join(self.input_dir, filename)
                 print("File path: " + file_path)
                 # Pandas.read_csv method returns DataFrame object
                 try:
-                    if "campus" in name_of_file:
+                    if "campus" in name_of_file or 'cfy' in name_of_file:
                         df = read_csv(file_path,
                                       delimiter=",",
                                       header=0,
@@ -68,9 +68,9 @@ class StaarFilterAll:
                         df = df[df['Category'].isin(valuesCampus)]
                     else:
                         df = read_csv(file_path,
-                                  delimiter=",",
-                                  header=0,
-                                  low_memory=False)
+                                      delimiter=",",
+                                      header=0,
+                                      low_memory=False)
                         df = df[df['Category'].isin(valuesDS)]
                         if "state" in name_of_file or "sfy" in name_of_file:
                             df.insert(0, 'DISTRICT', "1")
@@ -98,8 +98,8 @@ class StaarFilterAll:
 
 
 def main():
-    staar_wide = "2_staar_wide"
-    staar_filtered = "3_staar_filtered"
+    staar_wide = join('..', "2_staar_wide")
+    staar_filtered = join('..', "3_staar_filtered")
 
     for item_dir in listdir(staar_wide):
         input_dir = join(staar_wide, item_dir)

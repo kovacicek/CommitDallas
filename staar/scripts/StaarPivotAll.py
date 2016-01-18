@@ -19,28 +19,28 @@ value_col = "sexm"
 
 # Columns that will be extracted from the files
 ColumnsCampus = [index_col,
-           "YEAR",
-           "REGION",
-           "DISTRICT",
-           "DNAME",
-           "CNAME",
-           "Subject",
-           "Grade",
-           "Language",
-           pivot_col,
-           value_col
-           ]
+                 "YEAR",
+                 "REGION",
+                 "DISTRICT",
+                 "DNAME",
+                 "CNAME",
+                 "Subject",
+                 "Grade",
+                 "Language",
+                 pivot_col,
+                 value_col
+                 ]
 
 ColumnsDS = ["YEAR",
-           "REGION",
-           "DISTRICT",
-           "DNAME",
-           "Subject",
-           "Grade",
-           "Language",
-           pivot_col,
-           value_col
-           ]
+             "REGION",
+             "DISTRICT",
+             "DNAME",
+             "Subject",
+             "Grade",
+             "Language",
+             pivot_col,
+             value_col
+             ]
 
 class StaarPivotAll:
     script_name = "StaarPivotAll"
@@ -124,8 +124,8 @@ class StaarPivotAll:
 
 
 def main():
-    staar_merge = "4_staar_merged"
-    staar_pivot = "5_staar_pivoted"
+    staar_merge = join('..', "4_staar_merged")
+    staar_pivot = join('..', "5_staar_pivoted")
 
 #     for item_dir in listdir(staar_merge):
 #         input_dir = join(staar_merge, item_dir)

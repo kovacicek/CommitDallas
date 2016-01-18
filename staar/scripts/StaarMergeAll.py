@@ -20,22 +20,22 @@ class StaarMergeAll:
         self.input_dir = input_dir
         self.output_dir = output_dir
         
-        # self.CleanOutput()
         self.ReadData()
         self.Merge()
     # end __init__
 
-    def CleanOutput(self):
+    @staticmethod
+    def CleanOutput(output_dir):
         """
         Cleans output dir if exists
         """
         print("Clean Output")
-        if exists(self.output_dir):
-            for item in listdir(self.output_dir):
-                remove(join(self.output_dir, item))
-            print("\t output dir cleaned: %s" % (self.output_dir))
+        if exists(output_dir):
+            for item in listdir(output_dir):
+                remove(join(output_dir, item))
+            print("\t output dir cleaned: %s" % (output_dir))
         else:
-            print("\t output dir does not exist: %s" % (self.output_dir))
+            print("\t output dir does not exist: %s" % (output_dir))
     # end CleanOutput
 
     def ReadData(self):
@@ -66,19 +66,21 @@ class StaarMergeAll:
         print("Start merging")
         if not exists(self.output_dir):
             mkdir(self.output_dir)
-        data =  concat(self.data_frames)
+        data = concat(self.data_frames)
 
         # Write to output
-        merged_file = join(self.output_dir,
-                           "%s_merged.csv" % (basename(self.input_dir)))
+        merged_file = join(
+            self.output_dir,
+            "%s.csv" %(basename(self.input_dir.replace('filtered', 'merged'))))
         data.to_csv(merged_file, sep=",", index = False)
         print("\t %s files merged into: %s" % (self.input_dir, merged_file))
     # end Merge
 
 def main():
-    staar_filter = "3_staar_filtered"
-    staar_merged = "4_staar_merged"
+    staar_filter = join('..', "3_staar_filtered")
+    staar_merged = join('..', "4_staar_merged")
 
+    StaarMergeAll.CleanOutput(staar_merged)
     for item_dir in listdir(staar_filter):
         input_dir = join(staar_filter, item_dir)
         # output_dir = join(staar_merged, item_dir)
