@@ -15,7 +15,7 @@ from pandas.core.frame import DataFrame
 # Columns related to pivoting
 index_col = "CAMPUS"
 pivot_col = "Category"
-value_col = "sexm"
+value_col = "eth2"
 
 # Columns that will be extracted from the files
 ColumnsCampus = [index_col,
@@ -54,21 +54,22 @@ class StaarPivotAll:
         self.Process()
     # end __init__
 
-    def CleanOutput(self):
+    @staticmethod
+    def CleanOutput(output_dir):
         """
         Cleans output dir if exists
         """
         print("Clean Output")
-        if exists(self.output_dir):
-            for item in listdir(self.output_dir):
-                remove(join(self.output_dir, item))
-            print("\t output dir cleaned: %s" % (self.output_dir))
+        if exists(output_dir):
+            for item in listdir(output_dir):
+                remove(join(output_dir, item))
+            print("\t output dir cleaned: %s" % (output_dir))
         else:
-            print("\t output dir does not exist: %s" % (self.output_dir))
+            print("\t output dir does not exist: %s" % (output_dir))
     # end CleanOutput
 
     def Process(self):
-        print("\nRead Data")
+        print("Processing started")
         # List directory containing the .csv files
         for filename in listdir(self.input_dir):
             name_of_file = path.splitext(filename)[0]
@@ -81,14 +82,16 @@ class StaarPivotAll:
                                       delimiter=",",
                                       header=0,
                                       low_memory=False)
-                        df_pivot = df.set_index(ColumnsCampus[:-1]).unstack(pivot_col)
+                        df_pivot = df.set_index(
+                            ColumnsCampus[:-1]).unstack(pivot_col)
                     else:
                         df = read_csv(file_path,
                                       usecols=ColumnsDS,
                                       delimiter=",",
                                       header=0,
                                       low_memory=False)
-                        df_pivot = df.set_index(ColumnsDS[:-1]).unstack(pivot_col)
+                        df_pivot = df.set_index(
+                            ColumnsDS[:-1]).unstack(pivot_col)
                         
                     self.WriteData(df_pivot, filename)
                 except OSError:
@@ -127,13 +130,7 @@ def main():
     staar_merge = join('..', "4_staar_merged")
     staar_pivot = join('..', "5_staar_pivoted")
 
-#     for item_dir in listdir(staar_merge):
-#         input_dir = join(staar_merge, item_dir)
-#         output_dir = join(staar_pivot, item_dir)
-#         input_dir = staar_merge
-#         output_dir = staar_pivot
-#         StaarPivot(input_dir, output_dir)
-#         StaarPivot(input_dir, output_dir)
+    # StaarPivotAll.CleanOutput(staar_pivot)
     StaarPivotAll(staar_merge, staar_pivot)
     print("Finished")
 
