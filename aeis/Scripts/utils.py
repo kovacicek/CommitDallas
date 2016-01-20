@@ -67,8 +67,12 @@ class Utils:
         """
         if not exists(output_dir):
             mkdir(output_dir)
-        print("\t Writing %s" % output_name)
+        print("\t Writing file %s" % join(output_dir, output_name))
         data_frame.to_csv(join(output_dir, output_name),
                           sep=",",
                           index=False)
     # end WriteData
+
+    @staticmethod
+    def add_column(data_frame, col_name, value):
+        pass

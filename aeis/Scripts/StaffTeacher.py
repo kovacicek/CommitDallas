@@ -76,16 +76,18 @@ class StaffTeacher:
                         self.adjusted = adjusted_columns
 
                         # Pandas.read_csv method returns DataFrame object
+                        data_frame = None
                         try:
                             data_frame = read_csv(file_path,
                                               usecols=adjusted_columns,
                                               delimiter=",",
                                               header=0,
                                               low_memory=False)
-                            Utils.write_data(data_frame, filename, value[1])
                         except:
                             print("Error while reading %s" % filename)
                             print("Columns: %s\n" % adjusted_columns)
+                        if data_frame is not None:
+                            Utils.write_data(data_frame, filename, value[1])
     # end ReadData
 
     def merge(self):
