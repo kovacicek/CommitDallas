@@ -7,30 +7,29 @@ Created on 17.09.2015.
 @skype: kovacicek0508988
 '''
 
-from os import listdir, mkdir, remove
+from os import listdir, mkdir, remove, getcwd
 from os.path import join, splitext, exists
 from pandas import ExcelWriter, read_csv, concat
+from commit_utils import Utils
 
 
 class AddStateRow:
-    data_dir_district = join("..", "Inputs", "2_aeis_district")
-    data_dir_state = join("..", "Inputs", "3_aeis_state")
-    data_dir_output = join("..", "Inputs", "4_district_state")
+    base = join('..', 'Inputs', 'data_csv')
+#     data_dir_district = join("..", "Inputs", "2_aeis_district")
+#     data_dir_state = join("..", "Inputs", "3_aeis_state")
+#     data_dir_output = join("..", "Inputs", "4_district_state")
+    data_dir_district =  join(base, 'AEIS 2011-12', 'district')
+    data_dir_state = join(base, 'AEIS 2011-12', 'state')
+    data_dir_output = join(base, 'AEIS 2011-12', 'district_with_state')
 
     def __init__(self):
-        self.CleanOutput()
+        Utils.clean_output(AddStateRow.data_dir_output)
         self.Process()
     # end __init__
-    
-    def CleanOutput(self):
-        if exists(self.data_dir_output):
-            for item in listdir(self.data_dir_output):
-                remove(join(self.data_dir_output, item))
-            print("Output directory %s cleaned" % self.data_dir_output)
-    # end CleanOutput
 
     def Process(self):
         print ("Processing started")
+        print(self.data_dir_district)
         if not exists(self.data_dir_district):
             print ("\t Data Directory District Does Not Exist")
             exit()
@@ -52,34 +51,15 @@ class AddStateRow:
                     district_filename = splitext(district_item)[0]
 
                     # Find proper state file
-                    state_file_path = self.FindProperStateFile(
-                        district_filename)
+                    state_file_path = Utils.find_proper_state_file_2(
+                        district_filename, self.data_dir_state)
 
                     if state_file_path is not None:
                         data_frame_output = self.ConcatenateFiles(
-                            district_file_path,
-                            state_file_path)
+                                                        district_file_path,
+                                                        state_file_path)
                         self.WriteData(data_frame_output, district_item)
     # end Process
-
-    def FindProperStateFile(self, district_filename):
-        """
-        It returns state file that corresponds to district filename.
-        If corresponding file is not found, return value is None
-        """
-        for state_item in listdir(self.data_dir_state):
-            # Check only .csv files
-            if splitext(state_item)[1] == ".csv":
-                state_file_path = join(self.data_dir_state, state_item)
-                # get full name of the state file
-                state_filename = splitext(state_item)[0]
-                tmp = state_filename.replace("state", "district")
-                if district_filename == tmp:
-                    return state_file_path
-        else:
-            print("There is no corresponding file for %s" % district_filename)
-            return None
-    # end FindProperStateFile
 
     def ConcatenateFiles(self,
                          district_file_path,
@@ -93,17 +73,27 @@ class AddStateRow:
                                     delimiter=",",
                                     header=0)
 
-        # replace column names in the state data frame
+        # rename columns in the state data frame
         columns = dict()
         for col in data_frame_state.columns:
             if col not in ("DISTRICT", "YEAR"):
                 columns[col] = "D" + col[1:]
         data_frame_state.rename(columns=columns, inplace=True)
-        data_frame_state['DISTRICT'].ix[0] = "'1"
 
         # concatenate district and state data frames
+        # add state at the end
         data_frame_output = concat((data_frame_district, data_frame_state),
                                    ignore_index=True)
+        
+        # DISTRICT should be the first column
+        columns = data_frame_output.columns.tolist()
+        columns.remove('DISTRICT')
+        columns = ['DISTRICT'] + columns
+        data_frame_output = data_frame_output[columns]
+        
+        # write '1 in DISTRICT column of state row
+        data_frame_output['DISTRICT'].iloc[-1] = "'1"
+
         return data_frame_output
     # end ConcatenateFiles
 
@@ -114,7 +104,6 @@ class AddStateRow:
         Demonstrated how to write files in .csv and .xlsx format
         DataFrame object has methods to_csv and to_excel
         """
-
         if not exists(self.data_dir_output):
             mkdir(self.data_dir_output)
         print ("\t Writing %s" % output_name)

@@ -1,5 +1,5 @@
-from os.path import splitext, join, exists
-from os import mkdir
+from os.path import splitext, join, exists, splitext
+from os import mkdir, listdir, remove
 
 ds_map = {'district': 'D', 
           'campus': 'C'}
@@ -76,3 +76,52 @@ class Utils:
     @staticmethod
     def add_column(data_frame, col_name, value):
         pass
+    
+    @staticmethod
+    def find_proper_state_file_1(district_filename, data_dir_state):
+        """
+        For files with names: YYYY_district/state/campus_type.csv
+        It returns state file that corresponds to district filename.
+        If corresponding file is not found, return value is None
+        """
+        for state_item in listdir(data_dir_state):
+            # Check only .csv files
+            if splitext(state_item)[1] == ".csv":
+                state_file_path = join(data_dir_state, state_item)
+                # get full name of the state file
+                state_filename = splitext(state_item)[0]
+                tmp = state_filename.replace("state", "district")
+                if district_filename == tmp:
+                    return state_file_path
+        else:
+            print("There is no corresponding file for %s" % district_filename)
+            return None
+    # end FindProperStateFile
+    
+    @staticmethod
+    def find_proper_state_file_2(district_filename, data_dir_state):
+        """
+        For files with names: d/s/ctype.csv
+        It returns state file that corresponds to district filename.
+        If corresponding file is not found, return value is None
+        """
+        for state_item in listdir(data_dir_state):
+            # Check only .csv files
+            if splitext(state_item)[1] == ".csv":
+                state_file_path = join(data_dir_state, state_item)
+                # get full name of the state file
+                state_filename = splitext(state_item)[0]
+                tmp = 'd%s' % state_filename[1:]
+                if district_filename == tmp:
+                    return state_file_path
+        else:
+            print("There is no corresponding file for %s" % district_filename)
+            return None
+    # end FindProperStateFile
+
+    def clean_output(data_dir_output):
+        if exists(data_dir_output):
+            for item in listdir(data_dir_output):
+                remove(join(data_dir_output, item))
+            print("Output directory %s cleaned" % data_dir_output)
+    # end CleanOutput

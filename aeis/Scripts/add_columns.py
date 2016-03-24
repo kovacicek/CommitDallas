@@ -1,4 +1,4 @@
-from utils import *
+from commit_utils import *
 from os.path import join
 from pandas import read_csv
 

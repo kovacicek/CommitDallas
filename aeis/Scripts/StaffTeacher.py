@@ -10,7 +10,7 @@ Created on 19.09.2015.
 from os import listdir, remove
 from os.path import join, splitext, exists
 from pandas import read_csv
-from utils import *
+from commit_utils import *
 
 # Columns that will be extracted from the files
 Columns = {'campus': ["PSTEXPA",
