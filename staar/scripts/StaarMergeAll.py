@@ -46,7 +46,7 @@ class StaarMergeAll:
             # Check the extension of the files,
             # so only .csv files will be considered
             name_of_file = path.splitext(filename)[0]
-            print("Name of file: " + name_of_file)
+            print("\tFilename: " + name_of_file)
             if(path.splitext(filename)[1] == ".csv"):
                 file_path = path.join(self.input_dir, filename)
 
@@ -57,21 +57,27 @@ class StaarMergeAll:
                                       header=0,
                                       low_memory=False)
                     self.data_frames.append(data_frame)
-                    print("File with name %s appended" % filename)
+                    print("\tFile appended: %s" % filename)
                 except:
-                    print("Error while reading %s" % filename)
+                    print("\tError while reading: %s" % filename)
     # end ReadData
 
     def Merge(self):
-        print("Start merging")
+        print("Merging started")
         if not exists(self.output_dir):
             mkdir(self.output_dir)
         data = concat(self.data_frames)
 
+        # Change filename
+        if 'filtered' in basename(self.input_dir):
+            fn = basename(self.input_dir.replace('filtered', 'merged'))
+        else:
+            fn = '%s_merged' % basename(self.input_dir)
+
         # Write to output
         merged_file = join(
             self.output_dir,
-            "%s.csv" %(basename(self.input_dir.replace('filtered', 'merged'))))
+            "%s.csv" %(fn))
         data.to_csv(merged_file, sep=",", index = False)
         print("\t %s files merged into: %s" % (self.input_dir, merged_file))
     # end Merge
@@ -80,7 +86,10 @@ def main():
     staar_filter = join('..', "3_staar_filtered")
     staar_merged = join('..', "4_staar_merged")
 
-    StaarMergeAll.CleanOutput(staar_merged)
+    # clean output directory
+    from commit_utils import Utils
+    Utils.clean_output(staar_merged)
+
     for item_dir in listdir(staar_filter):
         input_dir = join(staar_filter, item_dir)
         # output_dir = join(staar_merged, item_dir)

@@ -15,7 +15,7 @@ from pandas.core.frame import DataFrame
 # Columns related to pivoting
 index_col = "CAMPUS"
 pivot_col = "Category"
-value_col = "eth2"
+value_col = "econ"
 
 # Columns that will be extracted from the files
 ColumnsCampus = [index_col,
@@ -50,23 +50,8 @@ class StaarPivotAll:
         self.input_dir = input_dir
         self.output_dir = output_dir
 
-        # self.CleanOutput()
         self.Process()
     # end __init__
-
-    @staticmethod
-    def CleanOutput(output_dir):
-        """
-        Cleans output dir if exists
-        """
-        print("Clean Output")
-        if exists(output_dir):
-            for item in listdir(output_dir):
-                remove(join(output_dir, item))
-            print("\t output dir cleaned: %s" % (output_dir))
-        else:
-            print("\t output dir does not exist: %s" % (output_dir))
-    # end CleanOutput
 
     def Process(self):
         print("Processing started")
@@ -118,7 +103,8 @@ class StaarPivotAll:
             data_frame.insert(9, 'demo', value_col)
         else:
             data_frame.insert(7, 'demo', value_col)
-
+        print(data_frame.columns)
+        
         data_frame.to_csv(join(self.output_dir,
                               output_name),
                           sep=",",

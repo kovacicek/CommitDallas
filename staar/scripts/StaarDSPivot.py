@@ -14,7 +14,7 @@ from pandas.core.frame import DataFrame
 
 # Columns related to pivoting
 pivot_col = "Category"
-value_col = "sexf"
+value_col = "econ"
 
 # Columns that will be extracted from the files
 Columns = ["YEAR",
@@ -40,25 +40,14 @@ class StaarDSPivot:
         self.Process()
     # end __init__
 
-    def CleanOutput(self):
-        """
-        Cleans output dir if exists
-        """
-        print("Clean Output")
-        if exists(self.output_dir):
-            for item in listdir(self.output_dir):
-                remove(join(self.output_dir, item))
-            print("\t output dir cleaned: %s" % (self.output_dir))
-        else:
-            print("\t output dir does not exist: %s" % (self.output_dir))
-    # end CleanOutput
 
     def Process(self):
         print("\nRead Data")
         # List directory containing the .csv files
         for filename in listdir(self.input_dir):
             name_of_file = path.splitext(filename)[0]
-            if(path.splitext(filename)[1] == ".csv"):
+            fn, ext = path.splitext(filename)
+            if(ext == ".csv" and 'district-state' in fn):
                 file_path = path.join(self.input_dir, filename)
                 try:
                     df = read_csv(file_path,
@@ -97,8 +86,8 @@ class StaarDSPivot:
 
 
 def main():
-    staar_merge = "4_staar_merged"
-    staar_pivot = "5_staar_pivoted"
+    staar_merge = join('..', '4_staar_merged')
+    staar_pivot = join('..', '5_staar_pivoted')
 
     StaarDSPivot(staar_merge, staar_pivot)
     print("Finished")

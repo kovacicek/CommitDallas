@@ -40,22 +40,8 @@ class StaarPivot:
         self.input_dir = input_dir
         self.output_dir = output_dir
 
-        # self.CleanOutput()
         self.Process()
     # end __init__
-
-    def CleanOutput(self):
-        """
-        Cleans output dir if exists
-        """
-        print("Clean Output")
-        if exists(self.output_dir):
-            for item in listdir(self.output_dir):
-                remove(join(self.output_dir, item))
-            print("\t output dir cleaned: %s" % (self.output_dir))
-        else:
-            print("\t output dir does not exist: %s" % (self.output_dir))
-    # end CleanOutput
 
     def Process(self):
         print("\nRead Data")

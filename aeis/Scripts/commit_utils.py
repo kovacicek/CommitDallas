@@ -120,8 +120,11 @@ class Utils:
     # end FindProperStateFile
 
     def clean_output(data_dir_output):
+        print("Clean Output")
         if exists(data_dir_output):
             for item in listdir(data_dir_output):
                 remove(join(data_dir_output, item))
-            print("Output directory %s cleaned" % data_dir_output)
+            print("\tOutput directory %s cleaned" % data_dir_output)
+        else:
+            print("\tOutput directory does not exist: %s" % (data_dir_output))
     # end CleanOutput

@@ -11,7 +11,6 @@ from os import path, listdir, mkdir, remove
 from os.path import join, splitext, exists
 from pandas import ExcelWriter, read_csv, concat, merge
 from pandas.core.frame import DataFrame
-#from bokeh.sampledata.stocks import filename
 
 values = ["d",
           "rs",
