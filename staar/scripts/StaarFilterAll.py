@@ -11,7 +11,6 @@ from os import path, listdir, mkdir, remove
 from os.path import join, splitext, exists, isdir
 from pandas import ExcelWriter, read_csv, concat, merge
 from pandas.core.frame import DataFrame
-#from bokeh.sampledata.stocks import filename
 
 valuesCampus = ["d",
                 "rs",
@@ -24,56 +23,49 @@ valuesDS = ["d",
             "satis_ph2_nm",
             "satis_rec_nm"]
 
+
 class StaarFilterAll:
     script_name = "StaarFilterAll"
-    data_frames = list()
 
     def __init__(self, input_dir, output_dir):
         self.input_dir = input_dir
         self.output_dir = output_dir
 
-        self.CleanOutput()
+        from commit_utils import Utils
+        Utils.clean_output(self.output_dir)
+
         self.ReadData()
     # end __init__
-
-    def CleanOutput(self):
-        """
-        Cleans output dir if exists
-        """
-        print("Clean Output")
-        if exists(self.output_dir) and isdir(self.output_dir):
-            for item in listdir(self.output_dir):
-                if 'readme.txt' not in item:
-                    remove(join(self.output_dir, item))
-            print("\t output dir cleaned: %s" % (self.output_dir))
-        else:
-            print("\t output dir does not exist: %s" % (self.output_dir))
-    # end CleanOutput
 
     def ReadData(self):
         print("\nRead Data")
         # List input directory containing the .csv files
         for filename in listdir(self.input_dir):
-            name_of_file = path.splitext(filename)[0]
+            fn = path.splitext(filename)[0]
             if(path.splitext(filename)[1] == ".csv"):
                 file_path = path.join(self.input_dir, filename)
                 print("File path: " + file_path)
                 # Pandas.read_csv method returns DataFrame object
                 try:
-                    if "campus" in name_of_file or 'cfy' in name_of_file:
+                    if "campus" in fn or 'c' == fn[0]:
                         df = read_csv(file_path,
                                       delimiter=",",
                                       header=0,
                                       low_memory=False)
                         df = df[df['Category'].isin(valuesCampus)]
-                    else:
+                    elif ('district' in fn or 'dfy' == fn[0] or
+                          'state' in fn or 'sfy' == fn[0]):
                         df = read_csv(file_path,
                                       delimiter=",",
                                       header=0,
                                       low_memory=False)
                         df = df[df['Category'].isin(valuesDS)]
-                        if "state" in name_of_file or "sfy" in name_of_file:
+                        if 'state' in fn or 'sfy' == fn[0]:
+                            print('\t State file modification')
                             df.insert(0, 'DISTRICT', "1")
+                    else:
+                        print("\t Skipping file: %s" % file_path)
+                        continue
    
                     self.WriteData(df, filename)
                 except:
@@ -89,6 +81,7 @@ class StaarFilterAll:
         """
         if not exists(self.output_dir):
             mkdir(self.output_dir)
+        # remove '- parsed wide' from file name
         output_name = "%s_filtered.csv" % output_name.split(" - ")[0]
         print("\t Writing %s" % output_name)
         data_frame.to_csv(join(self.output_dir, output_name),

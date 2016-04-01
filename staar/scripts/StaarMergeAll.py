@@ -24,29 +24,13 @@ class StaarMergeAll:
         self.Merge()
     # end __init__
 
-    @staticmethod
-    def CleanOutput(output_dir):
-        """
-        Cleans output dir if exists
-        """
-        print("Clean Output")
-        if exists(output_dir):
-            for item in listdir(output_dir):
-                remove(join(output_dir, item))
-            print("\t output dir cleaned: %s" % (output_dir))
-        else:
-            print("\t output dir does not exist: %s" % (output_dir))
-    # end CleanOutput
-
     def ReadData(self):
         print("\nRead Data")
         self.data_frames = list()
         # List directory containing the .csv files
         for filename in listdir(self.input_dir):
-            # Check the extension of the files,
-            # so only .csv files will be considered
-            name_of_file = path.splitext(filename)[0]
-            print("\tFilename: " + name_of_file)
+            # Check file extensions,
+            # only .csv files will be considered
             if(path.splitext(filename)[1] == ".csv"):
                 file_path = path.join(self.input_dir, filename)
 
@@ -79,7 +63,7 @@ class StaarMergeAll:
             self.output_dir,
             "%s.csv" %(fn))
         data.to_csv(merged_file, sep=",", index = False)
-        print("\t %s files merged into: %s" % (self.input_dir, merged_file))
+        print("\t%s files merged into: %s" % (self.input_dir, merged_file))
     # end Merge
 
 def main():

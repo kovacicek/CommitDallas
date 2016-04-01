@@ -13,12 +13,11 @@ from pandas import ExcelWriter, read_csv, concat, merge, pivot, pivot_table
 from pandas.core.frame import DataFrame
 
 # Columns related to pivoting
-index_col = "CAMPUS"
 pivot_col = "Category"
 value_col = "econ"
 
 # Columns that will be extracted from the files
-ColumnsCampus = [index_col,
+ColumnsCampus = ["CAMPUS",
                  "YEAR",
                  "REGION",
                  "DISTRICT",
@@ -42,9 +41,9 @@ ColumnsDS = ["YEAR",
              value_col
              ]
 
+
 class StaarPivotAll:
     script_name = "StaarPivotAll"
-    data_frames = list()
 
     def __init__(self, input_dir, output_dir):
         self.input_dir = input_dir
@@ -57,11 +56,11 @@ class StaarPivotAll:
         print("Processing started")
         # List directory containing the .csv files
         for filename in listdir(self.input_dir):
-            name_of_file = path.splitext(filename)[0]
+            fn = path.splitext(filename)[0]
             if(path.splitext(filename)[1] == ".csv"):
                 file_path = path.join(self.input_dir, filename)
                 try:
-                    if "campus" in name_of_file:
+                    if "campus" in fn:
                         df = read_csv(file_path,
                                       usecols=ColumnsCampus,
                                       delimiter=",",
@@ -69,7 +68,7 @@ class StaarPivotAll:
                                       low_memory=False)
                         df_pivot = df.set_index(
                             ColumnsCampus[:-1]).unstack(pivot_col)
-                    else:
+                    elif 'district-state' in fn:
                         df = read_csv(file_path,
                                       usecols=ColumnsDS,
                                       delimiter=",",
@@ -77,6 +76,8 @@ class StaarPivotAll:
                                       low_memory=False)
                         df_pivot = df.set_index(
                             ColumnsDS[:-1]).unstack(pivot_col)
+                    else:
+                        print("\t Skipping file: %s" % file_path)
                         
                     self.WriteData(df_pivot, filename)
                 except OSError:
@@ -87,8 +88,7 @@ class StaarPivotAll:
                   data_frame,
                   output_name):
         """
-        Demonstrated how to write files in .csv and .xlsx format
-        DataFrame object has methods to_csv and to_excel
+        Write data_frame
         """
         if not exists(self.output_dir):
             mkdir(self.output_dir)
@@ -101,9 +101,10 @@ class StaarPivotAll:
         # add demo column
         if "campus" in output_name:
             data_frame.insert(9, 'demo', value_col)
-        else:
+        elif 'district-state' in output_name:
             data_frame.insert(7, 'demo', value_col)
-        print(data_frame.columns)
+        else:
+            print("\t Demo column not added in: %s" % output_name)
         
         data_frame.to_csv(join(self.output_dir,
                               output_name),
@@ -116,7 +117,6 @@ def main():
     staar_merge = join('..', "4_staar_merged")
     staar_pivot = join('..', "5_staar_pivoted")
 
-    # StaarPivotAll.CleanOutput(staar_pivot)
     StaarPivotAll(staar_merge, staar_pivot)
     print("Finished")
 

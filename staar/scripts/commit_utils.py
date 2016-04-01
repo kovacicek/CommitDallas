@@ -116,7 +116,7 @@ class Utils:
     # end FindProperStateFile
 
     def clean_output(data_dir_output):
-        print("Clean Output")
+        print("Cleaning Output")
         if exists(data_dir_output):
             for item in listdir(data_dir_output):
                 remove(join(data_dir_output, item))
