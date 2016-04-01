@@ -93,18 +93,19 @@ class StaarPivotAll:
         if not exists(self.output_dir):
             mkdir(self.output_dir)
         output_name = output_name.replace("merged", "pivoted_%s" % value_col)
-        print("\t Writing %s" % output_name)
+        print("\n\tWriting %s" % output_name)
         # fix the column names after multiindexing
         data_frame.reset_index(col_level=1, inplace=True)
         data_frame.columns = data_frame.columns.get_level_values(1)
 
         # add demo column
+        print("\tAdding demo column in: %s" % output_name)
         if "campus" in output_name:
             data_frame.insert(9, 'demo', value_col)
         elif 'district-state' in output_name:
             data_frame.insert(7, 'demo', value_col)
         else:
-            print("\t Demo column not added in: %s" % output_name)
+            print("\tDemo column not added in: %s" % output_name)
         
         data_frame.to_csv(join(self.output_dir,
                               output_name),
