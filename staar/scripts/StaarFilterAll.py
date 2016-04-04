@@ -20,7 +20,6 @@ valuesCampus = ["d",
 valuesDS = ["d",
             "rs",
             "satis_ph1_nm",
-            "satis_ph2_nm",
             "satis_rec_nm"]
 
 
@@ -47,20 +46,20 @@ class StaarFilterAll:
                 print("File path: " + file_path)
                 # Pandas.read_csv method returns DataFrame object
                 try:
-                    if "campus" in fn or 'c' == fn[0]:
+                    if "campus" in fn or 'cfy' == fn[0:3]:
                         df = read_csv(file_path,
                                       delimiter=",",
                                       header=0,
                                       low_memory=False)
                         df = df[df['Category'].isin(valuesCampus)]
-                    elif ('district' in fn or 'dfy' == fn[0] or
-                          'state' in fn or 'sfy' == fn[0]):
+                    elif ('district' in fn or 'dfy' == fn[0:3] or
+                          'state' in fn or 'sfy' == fn[0:3]):
                         df = read_csv(file_path,
                                       delimiter=",",
                                       header=0,
                                       low_memory=False)
                         df = df[df['Category'].isin(valuesDS)]
-                        if 'state' in fn or 'sfy' == fn[0]:
+                        if 'state' in fn or 'sfy' == fn[0:3]:
                             print('\t State file modification')
                             df.insert(0, 'DISTRICT', "1")
                     else:
