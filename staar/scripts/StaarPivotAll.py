@@ -12,8 +12,6 @@ from os.path import join, splitext, exists
 from pandas import ExcelWriter, read_csv, concat, merge, pivot, pivot_table
 from pandas.core.frame import DataFrame
 
-# Columns related to pivoting
-
 
 # Columns that will be extracted from the files
 def cols_generator():
@@ -40,7 +38,7 @@ class StaarPivotAll:
     # end __init__
 
     def Process(self, cols_campus, cols_district, pivot_col, value_col):
-        print("Processing started\nPivot column: %s\nValue column: %s" 
+        print("\nProcessing started\nPivot column: %s\nValue column: %s" 
               % (pivot_col, value_col))
         # List directory containing the .csv files
         for filename in listdir(self.input_dir):
@@ -112,4 +110,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
