@@ -1,8 +1,9 @@
-from os.path import splitext, join, exists, splitext
+from os.path import join, exists, splitext
 from os import mkdir, listdir, remove
 
 ds_map = {'district': 'D', 
           'campus': 'C'}
+
 
 class Utils:
     @staticmethod
@@ -14,7 +15,7 @@ class Utils:
         elif ds == 'campus':
             adjusted_columns.append('CAMPUS')
         else:
-            print("Can't determine district or campus: ds = %" % ds)
+            print("Can't determine district or campus: ds = %s" % ds)
         adjusted_columns.append('YEAR')
 
         if columns is not None:
@@ -115,6 +116,7 @@ class Utils:
             return None
     # end FindProperStateFile
 
+    @staticmethod
     def clean_output(data_dir_output):
         print("Cleaning Output")
         if exists(data_dir_output):
@@ -122,5 +124,5 @@ class Utils:
                 remove(join(data_dir_output, item))
             print("\tOutput directory %s cleaned" % data_dir_output)
         else:
-            print("\tOutput directory does not exist: %s" % (data_dir_output))
+            print("\tOutput directory does not exist: %s" % data_dir_output)
     # end CleanOutput
