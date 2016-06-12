@@ -19,6 +19,7 @@ values = ["d",
           "satis_ph2_nm",
           "satis_rec_nm"]
 
+
 class StaarDSFilter:
     script_name = "StaarDSFilter"
     data_frames = list()

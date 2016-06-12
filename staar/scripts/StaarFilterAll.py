@@ -1,26 +1,20 @@
-'''
+"""
 Created on 07.11.2015.
 
 @author: Milan Kovacic
 @e-mail: kovacicek@hotmail.com
 @e-mail: milankovacic1988@gmail.com
 @skype: kovacicek0508988
-'''
+"""
 
-from os import path, listdir, mkdir, remove
-from os.path import join, splitext, exists, isdir
-from pandas import ExcelWriter, read_csv, concat, merge
-from pandas.core.frame import DataFrame
+from os import path, listdir, mkdir
+from os.path import join, exists
+from pandas import read_csv
 
-valuesCampus = ["d",
-                "rs",
-                "satis_ph1_nm",
-                "satis_rec_nm"]
-
-valuesDS = ["d",
-            "rs",
-            "satis_ph1_nm",
-            "satis_rec_nm"]
+values = ["d",
+          "rs",
+          "satis_ph1_nm",
+          "satis_rec_nm"]
 
 
 class StaarFilterAll:
@@ -33,15 +27,15 @@ class StaarFilterAll:
         from commit_utils import Utils
         Utils.clean_output(self.output_dir)
 
-        self.ReadData()
+        self.read_data()
     # end __init__
 
-    def ReadData(self):
+    def read_data(self):
         print("\nRead Data")
         # List input directory containing the .csv files
         for filename in listdir(self.input_dir):
             fn = path.splitext(filename)[0]
-            if(path.splitext(filename)[1] == ".csv"):
+            if path.splitext(filename)[1] == ".csv":
                 file_path = path.join(self.input_dir, filename)
                 print("File path: " + file_path)
                 # Pandas.read_csv method returns DataFrame object
@@ -51,14 +45,14 @@ class StaarFilterAll:
                                       delimiter=",",
                                       header=0,
                                       low_memory=False)
-                        df = df[df['Category'].isin(valuesCampus)]
+                        df = df[df['Category'].isin(values)]
                     elif ('district' in fn or 'dfy' == fn[0:3] or
                           'state' in fn or 'sfy' == fn[0:3]):
                         df = read_csv(file_path,
                                       delimiter=",",
                                       header=0,
                                       low_memory=False)
-                        df = df[df['Category'].isin(valuesDS)]
+                        df = df[df['Category'].isin(values)]
                         if 'state' in fn or 'sfy' == fn[0:3]:
                             print('\t State file modification')
                             df.insert(0, 'DISTRICT', "1")
@@ -66,18 +60,14 @@ class StaarFilterAll:
                         print("\t Skipping file: %s" % file_path)
                         continue
    
-                    self.WriteData(df, filename)
+                    self.write_data(df, filename)
                 except:
                     print("Error while reading %s" % filename)
     # end ReadData
 
-    def WriteData(self,
-                  data_frame,
-                  output_name):
-        """
-        Demonstrated how to write files in .csv and .xlsx format
-        DataFrame object has methods to_csv and to_excel
-        """
+    def write_data(self,
+                   data_frame,
+                   output_name):
         if not exists(self.output_dir):
             mkdir(self.output_dir)
         # remove '- parsed wide' from file name
@@ -101,4 +91,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    

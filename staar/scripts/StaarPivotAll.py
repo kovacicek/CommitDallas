@@ -1,16 +1,15 @@
-'''
+"""
 Created on 07.11.2015.
 
 @author: Milan Kovacic
 @e-mail: kovacicek@hotmail.com
 @e-mail: milankovacic1988@gmail.com
 @skype: kovacicek0508988
-'''
+"""
 
-from os import path, listdir, mkdir, remove
-from os.path import join, splitext, exists
-from pandas import ExcelWriter, read_csv, concat, merge, pivot, pivot_table
-from pandas.core.frame import DataFrame
+from os import path, listdir, mkdir
+from os.path import join, exists
+from pandas import read_csv
 
 
 # Columns that will be extracted from the files
@@ -34,16 +33,16 @@ class StaarPivotAll:
         self.output_dir = output_dir
 
         for cols in cols_generator():
-            self.Process(*cols)
+            self.process(*cols)
     # end __init__
 
-    def Process(self, cols_campus, cols_district, pivot_col, value_col):
+    def process(self, cols_campus, cols_district, pivot_col, value_col):
         print("\nProcessing started\nPivot column: %s\nValue column: %s" 
               % (pivot_col, value_col))
         # List directory containing the .csv files
         for filename in listdir(self.input_dir):
             fn = path.splitext(filename)[0]
-            if(path.splitext(filename)[1] == ".csv"):
+            if path.splitext(filename)[1] == ".csv":
                 file_path = path.join(self.input_dir, filename)
                 try:
                     if "campus" in fn:
@@ -64,16 +63,17 @@ class StaarPivotAll:
                             cols_district[:-1]).unstack(pivot_col)
                     else:
                         print("\t Skipping file: %s" % file_path)
+                        continue
                         
-                    self.WriteData(df_pivot, filename, value_col)
+                    self.write_data(df_pivot, filename, value_col)
                 except OSError:
-                   print("Error while reading %s" % filename)
+                    print("Error while reading %s" % filename)
     # end ReadData
 
-    def WriteData(self,
-                  data_frame,
-                  output_name,
-                  value):
+    def write_data(self,
+                   data_frame,
+                   output_name,
+                   value):
         """
         Write data_frame
         """
@@ -81,7 +81,7 @@ class StaarPivotAll:
             mkdir(self.output_dir)
         output_name = output_name.replace("merged", "pivoted_%s" % value)
         print("\n\tWriting %s" % output_name)
-        # fix the column names after multiindexing
+        # fix the column names after multi indexing
         data_frame.reset_index(col_level=1, inplace=True)
         data_frame.columns = data_frame.columns.get_level_values(1)
 
@@ -94,8 +94,7 @@ class StaarPivotAll:
         else:
             print("\tDemo column not added in: %s" % output_name)
         
-        data_frame.to_csv(join(self.output_dir,
-                              output_name),
+        data_frame.to_csv(join(self.output_dir, output_name),
                           sep=",",
                           index=False)
     # end WriteData

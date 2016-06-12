@@ -1,15 +1,15 @@
-'''
+"""
 Created on 07.11.2015.
 
 @author: Milan Kovacic
 @e-mail: kovacicek@hotmail.com
 @e-mail: milankovacic1988@gmail.com
 @skype: kovacicek0508988
-'''
+"""
 
-from os import path, listdir, mkdir, remove
-from os.path import join, splitext, exists, basename
-from pandas import ExcelWriter, read_csv, concat
+from os import path, listdir, mkdir
+from os.path import join, exists, basename
+from pandas import read_csv, concat
 
 
 class StaarMergeAll:
@@ -20,33 +20,33 @@ class StaarMergeAll:
         self.input_dir = input_dir
         self.output_dir = output_dir
         
-        self.ReadData()
-        self.Merge()
+        self.read_data()
+        self.merge()
     # end __init__
 
-    def ReadData(self):
+    def read_data(self):
         print("\nRead Data")
         self.data_frames = list()
         # List directory containing the .csv files
         for filename in listdir(self.input_dir):
             # Check file extensions,
             # only .csv files will be considered
-            if(path.splitext(filename)[1] == ".csv"):
+            if path.splitext(filename)[1] == ".csv":
                 file_path = path.join(self.input_dir, filename)
 
                 # Pandas.read_csv method returns DataFrame object
                 try:
                     data_frame = read_csv(file_path,
-                                      delimiter=",",
-                                      header=0,
-                                      low_memory=False)
+                                          delimiter=",",
+                                          header=0,
+                                          low_memory=False)
                     self.data_frames.append(data_frame)
                     print("\tFile appended: %s" % filename)
                 except:
                     print("\tError while reading: %s" % filename)
     # end ReadData
 
-    def Merge(self):
+    def merge(self):
         print("Merging started")
         if not exists(self.output_dir):
             mkdir(self.output_dir)
@@ -59,12 +59,11 @@ class StaarMergeAll:
             fn = '%s_merged' % basename(self.input_dir)
 
         # Write to output
-        merged_file = join(
-            self.output_dir,
-            "%s.csv" %(fn))
-        data.to_csv(merged_file, sep=",", index = False)
+        merged_file = join(self.output_dir, "%s.csv" % fn)
+        data.to_csv(merged_file, sep=",", index=False)
         print("\t%s files merged into: %s" % (self.input_dir, merged_file))
     # end Merge
+
 
 def main():
     staar_filter = join('..', "3_staar_filtered")
